@@ -1,12 +1,20 @@
 const { Board, Comment } = require('../data-access');
-
+/**
+ * 날짜를 YYYY-MM-DD 형식으로 변환.
+ * @param {string} inputDate - 변환할 날짜 문자열.
+ * @returns {string} 포맷된 날짜 문자열.
+ */
 const formatDate = (inputDate) => {
     const date = new Date(inputDate);
     return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(
         date.getDate(),
     ).padStart(2, '0')}`;
 };
-
+/**
+ * 특정 게시물의 상세 정보를 조회.
+ * @param {object} req
+ * - req.params.id: {string} 조회할 게시물의 ID.
+ */
 const getDetailBoard = async (req, res) => {
     try {
         const board = await Board.findById(req.params.id).populate('userId', [
@@ -55,7 +63,11 @@ const getDetailBoard = async (req, res) => {
         res.status(500).end();
     }
 };
-
+/**
+ * 지역을 기준으로 게시물을 검색.
+ * @param {object} req
+ *   - req.query.value: {string} 검색어
+ */
 const getSearchBoard = async (req, res) => {
     try {
         const searchValue = req.query.value;
@@ -68,7 +80,11 @@ const getSearchBoard = async (req, res) => {
         res.status(500).end();
     }
 };
-
+/**
+ * 모든 게시물을 페이지네이션을 포함하여 조회합니다.
+ * @param {number} countPerPage - 페이지당 게시물 수
+ * @param {number} pageNo - 현재 페이지 번호
+ */
 const getAllBoard = async (req, res, countPerPage, pageNo) => {
     try {
         const totalCount = await Board.countDocuments({});
@@ -100,7 +116,10 @@ const getAllBoard = async (req, res, countPerPage, pageNo) => {
         res.status(500).end();
     }
 };
-
+/**
+ * 새로운 게시물을 생성.
+ * @param {object} req - 게시물 생성에 필요한 데이터를 포함.
+ */
 const postBoard = async (req, res) => {
     const { region, title, content, meetDate } = req.body;
     const { userId } = req.userData;
@@ -126,7 +145,10 @@ const postBoard = async (req, res) => {
         res.status(500).end();
     }
 };
-
+/**
+ * 기존 게시물을 수정.
+ * @param {object} req - 수정할 게시물 데이터를 포함.
+ */
 const editBoard = async (req, res) => {
     const { title, content, meetDate, region } = req.body;
 
@@ -161,7 +183,11 @@ const editBoard = async (req, res) => {
         res.status(500).send('서버 내부 오류로 인해 요청을 처리할 수 없습니다.');
     }
 };
-
+/**
+ * 게시물을 삭제.
+ * @param {object} req 
+ *   - req.userData.userId: {string} 요청을 보낸 사용자의 ID.
+ */
 const deleteBoard = async (req, res) => {
     try {
         const { userId } = req.userData;
